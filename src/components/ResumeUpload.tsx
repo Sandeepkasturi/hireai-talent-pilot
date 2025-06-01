@@ -11,9 +11,7 @@ const ResumeUpload = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
 
-  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    
+  const processFiles = useCallback((files: File[]) => {
     files.forEach((file) => {
       const newFile = {
         id: Date.now() + Math.random(),
@@ -60,6 +58,11 @@ const ResumeUpload = () => {
     });
   }, []);
 
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    processFiles(files);
+  }, [processFiles]);
+
   const handleDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
   }, []);
@@ -67,14 +70,8 @@ const ResumeUpload = () => {
   const handleDrop = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     const files = Array.from(event.dataTransfer.files);
-    
-    // Create a fake input event to reuse the upload logic
-    const fakeEvent = {
-      target: { files }
-    } as React.ChangeEvent<HTMLInputElement>;
-    
-    handleFileUpload(fakeEvent);
-  }, [handleFileUpload]);
+    processFiles(files);
+  }, [processFiles]);
 
   return (
     <div className="space-y-6">
